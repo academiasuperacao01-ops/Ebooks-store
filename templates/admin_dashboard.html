@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Painel Admin{% endblock %}
+
+{% block content %}
+    <section class="admin-header">
+        <h1>Painel Administrativo</h1>
+        <a href="{{ url_for('ebook_new') }}" class="btn btn-primary">+ Novo Ebook</a>
+    </section>
+
+    {% if ebooks %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Capa</th>
+                    <th>Título</th>
+                    <th>Preço</th>
+                    <th>Link</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ebook in ebooks %}
+                    <tr>
+                        <td><img src="{{ ebook.image_src }}" alt="" class="thumb"></td>
+                        <td>{{ ebook.title }}</td>
+                        <td>{{ ebook.price or "-" }}</td>
+                        <td><a href="{{ ebook.purchase_link }}" target="_blank" rel="noopener noreferrer">Ver link</a></td>
+                        <td class="actions">
+                            <a href="{{ url_for('ebook_edit', ebook_id=ebook.id) }}" class="btn btn-small">Editar</a>
+                            <form method="POST" action="{{ url_for('ebook_delete', ebook_id=ebook.id) }}"
+                                  onsubmit="return confirm('Tem certeza que deseja excluir este ebook?');" style="display:inline;">
+                                <button type="submit" class="btn btn-small btn-danger">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="empty-state">Nenhum ebook cadastrado ainda. Clique em "Novo Ebook" para começar.</p>
+    {% endif %}
+{% endblock %}

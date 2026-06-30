@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: loja-de-ebooks
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    autoDeploy: true
+    disk:
+      name: uploads-disk
+      mountPath: /opt/render/project/src/static/uploads
+      sizeGB: 1
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: junior007eai@gmail.com
+      - key: ADMIN_PASSWORD
+        value: senha22dificil08academia14
+      - key: DATABASE_URL
+        fromDatabase:
+          name: loja-de-ebooks-db
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+databases:
+  - name: loja-de-ebooks-db
+    plan: free

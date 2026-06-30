@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Ebook{% endblock %}
+
+{% block content %}
+    <section class="form-box">
+        <h1>{{ action }} Ebook</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <label for="title">Título *</label>
+            <input type="text" id="title" name="title" required
+                   value="{{ ebook.title if ebook else '' }}">
+
+            <label for="description">Descrição *</label>
+            <textarea id="description" name="description" rows="5" required>{{ ebook.description if ebook else '' }}</textarea>
+
+            <label for="price">Preço (opcional, texto livre, ex: R$ 29,90)</label>
+            <input type="text" id="price" name="price" value="{{ ebook.price if ebook else '' }}">
+
+            <label for="purchase_link">Link externo de aquisição *</label>
+            <input type="url" id="purchase_link" name="purchase_link" required
+                   placeholder="https://..." value="{{ ebook.purchase_link if ebook else '' }}">
+
+            <label for="image_file">Imagem da capa (upload de arquivo)</label>
+            <input type="file" id="image_file" name="image_file" accept=".png,.jpg,.jpeg,.gif,.webp">
+
+            <label for="image_url">OU link de imagem externa (alternativa ao upload)</label>
+            <input type="url" id="image_url" name="image_url" placeholder="https://..."
+                   value="{{ ebook.image_url if ebook else '' }}">
+
+            {% if ebook and ebook.image_src %}
+                <p>Imagem atual:</p>
+                <img src="{{ ebook.image_src }}" alt="" class="thumb-preview">
+            {% endif %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

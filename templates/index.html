@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Loja de Ebooks{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <h1>Nossos Ebooks</h1>
+        <p>Conhecimento na palma da sua mão. Escolha um título e adquira agora mesmo.</p>
+    </section>
+
+    {% if ebooks %}
+        <div class="ebook-grid">
+            {% for ebook in ebooks %}
+                <article class="ebook-card">
+                    <div class="ebook-image">
+                        <img src="{{ ebook.image_src }}" alt="Capa do ebook {{ ebook.title }}">
+                    </div>
+                    <div class="ebook-info">
+                        <h2>{{ ebook.title }}</h2>
+                        <p class="ebook-description">{{ ebook.description }}</p>
+                        {% if ebook.price %}
+                            <p class="ebook-price">{{ ebook.price }}</p>
+                        {% endif %}
+                        <a class="btn btn-buy" href="{{ ebook.purchase_link }}" target="_blank" rel="noopener noreferrer">
+                            Adquirir agora
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-state">Nenhum ebook cadastrado ainda. Volte em breve!</p>
+    {% endif %}
+{% endblock %}
