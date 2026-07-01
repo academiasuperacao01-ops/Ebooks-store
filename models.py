@@ -8,9 +8,8 @@ db = SQLAlchemy()
 
 class Admin(UserMixin, db.Model):
     __tablename__ = "admins"
-
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(150), unique=True, nullable=False)
+    id            = db.Column(db.Integer, primary_key=True)
+    email         = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
 
     def set_password(self, password):
@@ -22,21 +21,35 @@ class Admin(UserMixin, db.Model):
 
 class Ebook(db.Model):
     __tablename__ = "ebooks"
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    price = db.Column(db.String(50), nullable=True)  # texto livre, ex: "R$ 29,90"
-    image_filename = db.Column(db.String(255), nullable=True)
-    image_url = db.Column(db.String(500), nullable=True)  # alternativa: link externo da imagem
-    purchase_link = db.Column(db.String(500), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    id              = db.Column(db.Integer, primary_key=True)
+    title           = db.Column(db.String(200), nullable=False)
+    description     = db.Column(db.Text, nullable=False)
+    price           = db.Column(db.String(50), nullable=True)
+    image_filename  = db.Column(db.String(255), nullable=True)
+    image_url       = db.Column(db.String(500), nullable=True)
+    purchase_link   = db.Column(db.String(500), nullable=False)
+    created_at      = db.Column(db.DateTime, default=datetime.utcnow)
+    leads           = db.relationship("Lead", backref="ebook", lazy=True, cascade="all, delete-orphan")
 
     @property
     def image_src(self):
-        """Retorna a melhor fonte de imagem disponível para exibir no template."""
         if self.image_filename:
             return f"/static/uploads/{self.image_filename}"
         if self.image_url:
             return self.image_url
         return "/static/no-image.png"
+
+
+class Lead(db.Model):
+    __tablename__ = "leads"
+    id            = db.Column(db.Integer, primary_key=True)
+    ebook_id      = db.Column(db.Integer, db.ForeignKey("ebooks.id"), nullable=False)
+    name          = db.Column(db.String(150), nullable=False)
+    email         = db.Column(db.String(150), nullable=False)
+    whatsapp      = db.Column(db.String(30), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    consented     = db.Column(db.Boolean, default=False)
+    created_at    = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
