@@ -1,44 +1,112 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Loja de Ebooks{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Academia Digital — Ebooks Fitness{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <header class="topbar">
-        <div class="container topbar-inner">
-            <a href="{{ url_for('index') }}" class="brand">📚 Loja de Ebooks</a>
-            <nav>
-                {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('admin_dashboard') }}">Painel Admin</a>
-                    <a href="{{ url_for('admin_logout') }}">Sair</a>
-                {% else %}
-                    <a href="{{ url_for('admin_login') }}">Área do Admin</a>
-                {% endif %}
-            </nav>
-        </div>
-    </header>
 
-    <main class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-wrapper">
-                    {% for category, message in messages %}
-                        <div class="flash flash-{{ category }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a href="{{ url_for('index') }}" class="brand">
+      <span class="brand-icon">⚡</span>
+      <span>ACADEMIA<strong>DIGITAL</strong></span>
+    </a>
+    <nav>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('admin_dashboard') }}">Painel</a>
+        <a href="{{ url_for('admin_leads') }}">Leads</a>
+        <a href="{{ url_for('admin_logout') }}" class="btn-nav">Sair</a>
+      {% else %}
+        <a href="{{ url_for('admin_login') }}" class="btn-nav">Admin</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
 
-        {% block content %}{% endblock %}
-    </main>
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container flash-wrapper">
+        {% for cat, msg in messages %}
+          <div class="flash flash-{{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
 
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; {{ 2026 }} Loja de Ebooks. Todos os direitos reservados.</p>
-        </div>
-    </footer>
+<footer class="footer">
+  <div class="container">
+    <p class="brand-foot">⚡ ACADEMIA<strong>DIGITAL</strong></p>
+    <p class="foot-sub">Conhecimento que transforma. Resultados que aparecem.</p>
+    <p class="foot-copy">&copy; 2026 Academia Digital. Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+<!-- Modal de Aquisição -->
+<div id="modal-overlay" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-header">
+      <p class="modal-label">ACESSO IMEDIATO</p>
+      <h2 id="modal-title" class="modal-title">Carregando...</h2>
+      <p id="modal-price" class="modal-price"></p>
+    </div>
+    <form id="modal-form" method="POST" action="">
+      <label>Nome completo *</label>
+      <input type="text" name="name" placeholder="Seu nome" required>
+
+      <label>E-mail *</label>
+      <input type="email" name="email" placeholder="seu@email.com" required>
+
+      <label>WhatsApp *</label>
+      <input type="tel" name="whatsapp" placeholder="(11) 99999-9999" required>
+
+      <label>Crie uma senha *</label>
+      <input type="password" name="password" placeholder="Mínimo 6 caracteres" minlength="6" required>
+
+      <label class="consent-label">
+        <input type="checkbox" name="consent" required>
+        <span>Aceito receber notificações por e-mail, WhatsApp e ofertas exclusivas. <em>(obrigatório)</em></span>
+      </label>
+
+      <button type="submit" class="btn btn-buy btn-full">
+        🔒 Garantir meu acesso agora
+      </button>
+      <p class="modal-secure">🛡️ Seus dados estão protegidos e não serão compartilhados.</p>
+    </form>
+  </div>
+</div>
+
+<script>
+function openModal(ebookId, title, price, link) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-price').textContent = price || '';
+  document.getElementById('modal-form').action = '/adquirir/' + ebookId;
+  document.getElementById('modal-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function shareEbook(title, url) {
+  if (navigator.share) {
+    navigator.share({ title: title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(() => alert('Link copiado para a área de transferência!'));
+  }
+}
+</script>
 </body>
 </html>
